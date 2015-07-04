@@ -13,3 +13,5 @@ deploy:
   app: ars-ctf
   on:
     repo: akhdani/capture-the-flag
+notifications:
+  email: false
