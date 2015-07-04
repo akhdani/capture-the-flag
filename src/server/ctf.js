@@ -27,8 +27,11 @@ var Ctf = function(config){
     // set creator as join
     self.players = self.config.creator ? [self.config.creator] : [];
 
-    // flag is game started
+    // is game started
     self.is_started = false;
+
+    // flag, currently only 1 flag supported
+    self.flag = null;
 
     // called when player join game
     self.join = function(player, password){
