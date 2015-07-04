@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- '0.10'
+install:
+- npm install
+branches:
+  only:
+  - master
+deploy:
+  provider: heroku
+  api_key:
+    secure: YSTI4AyrNUorluIzh2WkkR0KJWvAOoaTasLciPgqMeBqaNTtZIyBBNjhRuisRYHjOSkQ9gbo4xkhdCFFRT2BfiNM90e/cUuAYLbv4mlKYxT00BTgxfiXJ84CRrIJKNk0JCxHUMoRPsyqLrKrAtUep19siUn58yYkT7Twldi3Jslq7V/hhQYLSJZerUgtKf1VxZ1zOU7u/aRwfY4aJXKf4gVieGpoQsuzRSjOBg1zUj8dztjRBmVRQEbSKW8Wvx+jVTzGYaO4ZpE8PljnL6lU4Lps96AVJmFMpOMxlbaADFZdo2WQ5O830bS9s/YQpQJ66jJfhxnhhy+nUQOER5Pv7RL5plp0UmDGgE9WUOgyleNIxaUCsapF0j/ddBDRepNruukxrzFLjVdm6kPogI1shH9drfMrAYl+uU9P3zlkPkHliHOa4aXT49FH6rab2VXfN8NggA+dzLEfv7ql1Fa7MoMd7Qh/32b5emKu/6c4XiHDe+96Ex+B+n+EhRUZhZL3heRj2nOP2sS1os5yAaBuRUPrsSsKtU0ubP30GeI75D+9IdtLFu57QEw6JLUch8e75+qSVB5WnkFf7so9CIoSTsZNw9k5AbZib3H1+2714gX9xDWjYmQATEL28PRsgo4Hd8JFriggkZHAGmgSjEV4HyZNm68Zr2lFEBKWN8Z49fg=
+  app: ars-uno
+  on:
+    repo: akhdani/uno
