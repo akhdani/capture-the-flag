@@ -107,6 +107,7 @@ module.exports = function(config){
     // return flag as normal js object
     self.data = function(){
         return {
+            id: self.id,
             latitude: self.latitude,
             longitude: self.longitude,
             holder: self.holder.id,
