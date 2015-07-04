@@ -104,4 +104,15 @@ io.on('connection', function (socket) {
         }
     });
 
+    // player grab
+    socket.on('grab', function(data, fn){
+        try{
+            players[socket.id].grab(data);
+            broadcast();
+            fn(null, null);
+        }catch(e){
+            fn(e.message, null);
+        }
+    });
+
 });
