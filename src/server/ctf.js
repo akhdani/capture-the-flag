@@ -1,6 +1,6 @@
 var Player = require('./ctf/player');
 
-var Ctf = function(config){
+module.exports =  function(config){
     config = config || {};
     var self = this;
 
@@ -8,7 +8,16 @@ var Ctf = function(config){
     self.config = {
         name: config.name || '',
         password: config.password || null,
-        creator: config.creator
+        creator: config.creator,
+
+        // flag
+        flag: {
+            latitude: config.latitude || -6.91221349,
+            longitude: config.longitude || 107.68012404,
+            distance: config.distance || 50,
+            time: config.time || 120
+        }
+
     };
 
     // set game creator
@@ -64,26 +73,38 @@ var Ctf = function(config){
     self.start = function(){
         if(self.is_started) throw new Error('Game already started');
 
+        // create a flag
+        self.flag = new Flag(self.config.flag);
+
         // mark game as started
         self.is_started = true;
     };
 
     // called when player stop the game
     self.stop = function(){
+        if(!self.is_started) throw new Error('Game is not started');
+
+        // when stopped, mark flag last holder
+        self.flag.grab(self.flag.holder);
+
+        // mark as not started
         self.is_started = false;
-        self.players = [];
-        self.history = [];
     };
 
     // send all data needed by player in client
     self.data = function(player){
-        var data = {};
+        var data = {
+            name: self.name,
+            is_started: self.is_started,
+            creator: self.creator.id,
+            flag: self.flag.data(),
+            players: []
+        };
+
+        for(var i=0; i<self.players.length; i++){
+            data.players.push(self.players[i].data());
+        }
 
         return data;
     };
 };
-
-Uno.prototype.Deck = Deck;
-Uno.prototype.Player = Player;
-
-module.exports = Uno;

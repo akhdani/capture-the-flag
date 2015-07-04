@@ -1,5 +1,5 @@
 {
-  "name": "Capture The Flag",
+  "name": "ars-ctf",
   "version": "1.0.0",
   "description": "Capture The Flag - Run Run Run!",
   "main": "index.js",
