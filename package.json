@@ -16,19 +16,24 @@
     "uno"
   ],
   "author": "Nicky Irawan <nicky@akhdani.co.id>",
-  "contributors": [{
-    "name": "Jaka Indria Pratama",
-    "email": "jaka@akhdani.co.id"
-  }, {
-    "name": "Aria Enggar",
-    "email": "aria@akhdani.co.id"
-  }, {
-    "name": "Athia Saelan",
-    "email": "athia@akhdani.co.id"
-  }],
+  "contributors": [
+    {
+      "name": "Jaka Indria Pratama",
+      "email": "jaka@akhdani.co.id"
+    },
+    {
+      "name": "Aria Enggar",
+      "email": "aria@akhdani.co.id"
+    },
+    {
+      "name": "Athia Saelan",
+      "email": "athia@akhdani.co.id"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "express": "^4.13.0",
+    "moment": "^2.10.3",
     "socket.io": "^1.3.5"
   },
   "devDependencies": {

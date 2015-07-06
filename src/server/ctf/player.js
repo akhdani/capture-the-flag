@@ -1,4 +1,6 @@
-var id = 0;
+var id = 1,
+    moment = require('moment'),
+    helper = require('./helper');
 
 module.exports = function(name, latitude, longitude){
     var self = this;
@@ -15,14 +17,14 @@ module.exports = function(name, latitude, longitude){
     self.longitude = longitude;
 
     // player last active time
-    self.time = null;
+    self.time = moment().format('X');
 
     // join game
     self.join = function(game, password){
         if(self.game != null) throw new Error('Player ' + self.name + ' is already in game');
 
-        self.game.join(self, password);
-        self.game = game;
+        game.join(self, password);
+        self.time = moment().format('X');
     };
 
     // leave game
@@ -38,6 +40,7 @@ module.exports = function(name, latitude, longitude){
         if(self.game.creator != self) throw new Error('Player is not the game creator');
 
         self.game.start();
+        self.time = moment().format('X');
     };
 
     // stop game
@@ -74,6 +77,7 @@ module.exports = function(name, latitude, longitude){
     // grab the flag
     self.grab = function(data){
         if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
+        if(!self.game.is_started)  throw new Error('Game flag is not started');
         if(self.game.flag == null)  throw new Error('Game flag is not set');
 
         self.game.flag.grab(self);
@@ -81,11 +85,25 @@ module.exports = function(name, latitude, longitude){
 
     // return player as normal js object
     self.data = function(){
+        var isgrabbable = false,
+            distance = Math.ceil(helper.get_distance(self.latitude, self.longitude, self.game.flag.latitude, self.game.flag.longitude)),
+            direction = helper.get_direction(self.latitude, self.longitude, self.game.flag.latitude, self.game.flag.longitude);
+        try{
+            self.game.flag.isgrabbable(self);
+            isgrabbable = true;
+        }catch(e){
+            isgrabbable = false;
+        }
+
         return {
             id: self.id,
             name: self.name,
             latitude: self.latitude,
-            longitude: self.longitude
+            longitude: self.longitude,
+            isgrabbable: isgrabbable,
+            time: self.time,
+            distance: distance,
+            direction: direction
         }
     };
 };

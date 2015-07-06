@@ -1,28 +1,12 @@
-var id = 0,
-    moment = require('momentjs');
-
-// compare distance
-function get_distance(latitude1, longitude1, latitude2, longitude2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(latitude2-latitude1);  // deg2rad below
-    var dLon = deg2rad(longitude2-longitude1);
-    var a =
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(deg2rad(latitude1)) * Math.cos(deg2rad(latitude2)) *
-            Math.sin(dLon/2) * Math.sin(dLon/2)
-        ;
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c * 1000; // distance in metres
-}
-
-function deg2rad(deg) {
-    return deg * (Math.PI/180)
-}
+var id = 1,
+    moment = require('moment'),
+    helper = require('./helper');
 
 module.exports = function(config){
     var self = this;
 
     self.id = id++;
+    self.game = config.game;
 
     // flag position
     self.latitude = config.latitude;
@@ -61,14 +45,16 @@ module.exports = function(config){
         self.holder = player;
         self.last_grabbed = moment().format('X');
 
-        // set previous holder history
-        self.holders[self.holders.length-1].stop_grab = self.last_grabbed;
-        self.holders[self.holders.length-1].duration = Math.abs(moment(self.holders[self.holders.length-1].stop_grab, 'X').diff(moment(self.holders[self.holders.length-1].start_grab, 'X'), 'seconds'));
+        if(self.holders.length > 0){
+            // set previous holder history
+            self.holders[self.holders.length-1].stop_grab = self.last_grabbed;
+            self.holders[self.holders.length-1].duration = Math.abs(moment(self.holders[self.holders.length-1].stop_grab, 'X').diff(moment(self.holders[self.holders.length-1].start_grab, 'X'), 'seconds'));
 
-        // check if longest grabber
-        if(self.holders[self.holders.length-1].duration > self.longest_grabbed){
-            self.longest_grabber = self.holders[self.holders.length-1].player;
-            self.longest_grabbed = self.holders[self.holders.length-1].duration;
+            // check if longest grabber
+            if(self.holders[self.holders.length-1].duration > self.longest_grabbed){
+                self.longest_grabber = self.holders[self.holders.length-1].player;
+                self.longest_grabbed = self.holders[self.holders.length-1].duration;
+            }
         }
 
         // set to history
@@ -85,11 +71,14 @@ module.exports = function(config){
 
     // isgrabbable
     self.isgrabbable = function(player){
+        // check if game is started
+        if(!self.game.is_started) throw new Error('Game is not started yet');
+
         // check time is allowed to grab
         if(moment().diff(self.last_grabbed, 'seconds') < self.time) throw new Error('Flag is still in stale time');
 
         // check distance
-        if(get_distance(self.latitude, self.longitude, player.latitude, player.longitude) < self.distance) throw new Error('The distance to grab the flag is insufficient');
+        if(helper.get_distance(self.latitude, self.longitude, player.latitude, player.longitude) > self.distance) throw new Error('The distance to grab the flag is insufficient');
     };
 
     // move the flag
@@ -110,7 +99,8 @@ module.exports = function(config){
             id: self.id,
             latitude: self.latitude,
             longitude: self.longitude,
-            holder: self.holder.id,
+            last_grabbed: self.last_grabbed,
+            holder: self.holder ? self.holder.id : 0,
             holders: self.holders,
             longest_grabber: self.longest_grabber,
             longest_grabbed: self.longest_grabbed

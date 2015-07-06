@@ -1,4 +1,5 @@
-var Player = require('./ctf/player');
+var Player = require('./ctf/player'),
+    Flag = require('./ctf/flag');
 
 module.exports =  function(config){
     config = config || {};
@@ -8,20 +9,17 @@ module.exports =  function(config){
     self.config = {
         name: config.name || '',
         password: config.password || null,
-        creator: config.creator,
 
         // flag
         flag: {
-            latitude: config.latitude || -6.91221349,
-            longitude: config.longitude || 107.68012404,
+            latitude: config.latitude || -6.89540614,
+            longitude: config.longitude || 107.63962269,
             distance: config.distance || 50,
-            time: config.time || 120
+            time: config.time || 120,
+            game: self
         }
 
     };
-
-    // set game creator
-    if(self.config.creator) self.config.creator.game = self;
 
     // all actions happened in the game
     self.history = [];
@@ -34,27 +32,23 @@ module.exports =  function(config){
     };
 
     // set creator as join
-    self.players = self.config.creator ? [self.config.creator] : [];
+    self.players = [];
 
     // is game started
     self.is_started = false;
 
     // flag, currently only 1 flag supported
-    self.flag = null;
+    self.flag = new Flag(self.config.flag);
 
     // called when player join game
     self.join = function(player, password){
         password = password || null;
 
         if(self.config.password && self.config.password != password) throw new Error('Password not same');
-        if(self.is_started) throw new Error('Game already started');
         if(!(player instanceof Player)) throw new Error('Player not allowed');
 
         // set additional info
         player.game = self;
-
-        // set game creator
-        if(self.config.creator == null) self.config.creator = player;
 
         self.players.push(player);
     };
@@ -65,27 +59,22 @@ module.exports =  function(config){
 
         // delete player from list
         self.players.splice(index, 1);
-
-        if(self.creator == player) self.stop(player);
     };
 
-    // called when player (creator) start the game
+    // called when admin start the game (from browser)
     self.start = function(){
         if(self.is_started) throw new Error('Game already started');
-
-        // create a flag
-        self.flag = new Flag(self.config.flag);
 
         // mark game as started
         self.is_started = true;
     };
 
-    // called when player stop the game
+    // called when admin stop the game (from browser)
     self.stop = function(){
         if(!self.is_started) throw new Error('Game is not started');
 
         // when stopped, mark flag last holder
-        self.flag.grab(self.flag.holder);
+        if(self.flag.holder) self.flag.grab(self.flag.holder);
 
         // mark as not started
         self.is_started = false;
@@ -96,7 +85,6 @@ module.exports =  function(config){
         var data = {
             name: self.name,
             is_started: self.is_started,
-            creator: self.creator.id,
             flag: self.flag.data(),
             players: []
         };
