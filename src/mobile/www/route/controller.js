@@ -11,9 +11,25 @@ define([
 
     return ['$scope', '$routeParams', '$log', '$timeout', '$socket', '$cordovaGeolocation', function($scope, $routeParams, $log, $timeout, $socket, $cordovaGeolocation){
         $scope.ceil = Math.ceil;
-        $scope.player = store.get('player') || {id: -1, isgrabbable: false};
-        $scope.game = store.get('game') || {is_started: false};
-        $scope.is_connected = false;
+        $scope.player = {id: -1, isgrabbable: false};
+        $scope.game = {is_started: false};
+        $scope.show_register = false;
+        $scope.isregistered = false;
+
+        // register function
+        $scope.register = function(){
+            if($scope.player.name) $socket.emit('register', {name: $scope.player.name, latitude: $scope.player.latitude, longitude: $scope.player.longitude}, function(e, data){
+                if(e) $log.error(e);
+                $scope.player = alt.extend($scope.player, data);
+                $scope.isregistered = true;
+                $scope.show_register = false;
+                $scope.$apply();
+                store.set('player', $scope.player);
+                $socket.emit('join', {}, function(e, data){
+                    if(e) $log.error(e);
+                });
+            });
+        };
 
         // grab function
         $scope.grab = function(){
@@ -25,8 +41,7 @@ define([
         // listening on any change from server
         $socket.on('game', function(data){
             $scope.game = alt.extend($scope.game, data);
-            store.set('game', $scope.game);
-            $log.debug(game);
+            $log.debug($scope.game);
 
             // redraw position
             if($scope.map.object && google && google.maps){
@@ -42,6 +57,7 @@ define([
             latitude: -6.89521975,
             longitude: 107.63844252,
             marker: [],
+            first: true,
             redraw: function(){
                 // reset map marker
                 for(var i=0; i<$scope.map.marker.length; i++){
@@ -110,8 +126,9 @@ define([
                 }
 
                 // ------------- bound map with marker
-                if ($scope.map.marker.length > 0) {
+                if ($scope.map.marker.length > 0 && $scope.map.first) {
                     $scope.map.object.fitBounds($scope.map.bounds);
+                    $scope.map.first = false;
                 }
                 google.maps.event.trigger($scope.map.object, "resize");
             }
@@ -146,8 +163,8 @@ define([
             },
             function(position) {
                 if($scope.player.id != -1){
-                    if($scope.is_connected){
-                        $scope.is_connected = true;
+                    if($scope.isregistered){
+                        $scope.isregistered = true;
                         $socket.emit('move', {latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data) {
                             if (e) $log.error(e);
                         });
@@ -157,15 +174,9 @@ define([
                         });
                     }
                 }else{
-                    // register player
-                    $socket.emit('register', {name: prompt('Insert your name'), latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data){
-                        if(e) $log.error(e);
-                        $scope.player = data;
-                        store.set('player', $scope.player);
-                        $socket.emit('join', {}, function(e, data){
-                            if(e) $log.error(e);
-                        });
-                    });
+                    $scope.player.latitude = position.coords.latitude;
+                    $scope.player.longitude = position.coords.longitude;
+                    $scope.show_register = true;
                 }
             }
         );

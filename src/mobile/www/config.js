@@ -23,5 +23,4 @@ requirejs.config({
     }
 });
 
-
 alt.module('ngCordova');

@@ -2,16 +2,27 @@
     <span style="color: white; line-height: 25px; font-size: 20px; font-weight: bold;">{{ game.flag.holder == player.id ? 'Run Run Run!' : 'Go Get The Flag!'}}</span>
 </div>
 <div style="position: fixed; top: 40px; left: 0; right: 0; bottom: 60px;">
+    <div data-ng-if="show_register" style="position: absolute; z-index: 10; background: rgba(0, 0, 0, 0.4); width: 100%; height: 100%; text-align: center;">
+        <div style="color: white; font-size: 30px; margin-top: 10px;">
+            Insert your name:
+        </div>
+        <div>
+            <input style="font-size: 30px; margin-top: 20px; width: 90%;" type="text" data-ng-model="player.name"/>
+        </div>
+        <div>
+            <button style="font-size: 30px; margin-top: 20px; width: 90%;" data-ng-click="register()">Register</button>
+        </div>
+    </div>
     <div id="map" style="width:100%; height:100%"></div>
 </div>
 <div style="position: fixed; bottom: 0; height: 60px; left: 0; right: 0; background: url('asset/img/footer-bg.png');">
-    <span style="position: absolute; left:  10px; top: 5px; font-size: 35px; text-align: right; width: 110px;">
-        <button class="btn btn-danger" style="width: 100%; height: 50px; font-size: 30px;">{{ (player.distance || 0) > 1000 ? ceil(player.distance / 1000) + 'km' : player.distance + 'm'}}</button>
-    </span>
+<span style="position: absolute; left:  10px; top: 5px; font-size: 35px; text-align: right; width: 110px;">
+    <button class="btn btn-danger" style="width: 100%; height: 50px; font-size: 30px;">{{ (player.distance || 0) > 1000 ? ceil(player.distance / 1000) + 'km' : player.distance + 'm'}}</button>
+</span>
     <div style="width: 100%; position: absolute; z-index: 99; text-align: center; top: -30px">
         <img src="asset/img/compass.png" style="height: 120px; transform: rotate({{ player.direction || 0 }}deg)"/>
     </div>
-    <span style="position: absolute; right:  10px; top: 5px; width: 110px;">
-        <button data-ng-disabled="!player.isgrabbable" data-ng-click="grab()" class="btn btn-danger" style="width: 100%; height: 50px; font-size: 30px;">Grab!</button>
-    </span>
+<span style="position: absolute; right:  10px; top: 5px; width: 110px;">
+    <button data-ng-disabled="!player.isgrabbable" data-ng-click="grab()" class="btn btn-danger" style="width: 100%; height: 50px; font-size: 30px;">Grab!</button>
+</span>
 </div>

@@ -32,6 +32,7 @@ define([
         // listening on any change from server
         $socket.on('game', function(data){
             $scope.game = alt.extend($scope.game, data);
+            $log.debug($scope.game);
 
             // redraw position
             if($scope.map.object && google && google.maps){
