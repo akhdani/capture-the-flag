@@ -10,11 +10,10 @@ define([
     });
 
     return ['$scope', '$routeParams', '$log', '$timeout', '$socket', '$cordovaGeolocation', function($scope, $routeParams, $log, $timeout, $socket, $cordovaGeolocation){
-        $scope.player = {id: -1, isgrabbable: false};
-        $scope.game = {
-            is_registered: false,
-            is_started: false
-        };
+        $scope.ceil = Math.ceil;
+        $scope.player = store.get('player') || {id: -1, isgrabbable: false};
+        $scope.game = store.get('game') || {is_started: false};
+        $scope.is_connected = false;
 
         // grab function
         $scope.grab = function(){
@@ -26,6 +25,8 @@ define([
         // listening on any change from server
         $socket.on('game', function(data){
             $scope.game = alt.extend($scope.game, data);
+            store.set('game', $scope.game);
+            $log.debug(game);
 
             // redraw position
             if($scope.map.object && google && google.maps){
@@ -63,6 +64,8 @@ define([
                     if(val.id == $scope.player.id){
                         $scope.player = val;
                         $scope.$apply();
+
+                        store.set('player', $scope.player);
                     }
 
                     var tmp = alt.extend({
@@ -131,36 +134,36 @@ define([
             $scope.map.redraw();
         });
 
-        // get current location
-        var location_options = {
+        // on location change
+        $cordovaGeolocation.watchPosition({
             frequency : 1000,
             timeout : 1000,
             enableHighAccuracy: true
-        };
-
-        // watch location
-        $scope.map.watch = $cordovaGeolocation.watchPosition(location_options);
-
-        // on location change
-        $scope.map.watch.then(
+        }).then(
             null,
             function(err) {
                 // error
             },
             function(position) {
-                if($scope.game.is_registered){
-                    $socket.emit('move', {latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data) {
-                        if (e) $log.error(e);
-                    });
+                if($scope.player.id != -1){
+                    if($scope.is_connected){
+                        $scope.is_connected = true;
+                        $socket.emit('move', {latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data) {
+                            if (e) $log.error(e);
+                        });
+                    }else{
+                        $socket.emit('reconnect', {id: $scope.player.id, latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data) {
+                            if (e) $log.error(e);
+                        });
+                    }
                 }else{
                     // register player
-                    $socket.emit('register', {name: 'tes', latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data){
+                    $socket.emit('register', {name: prompt('Insert your name'), latitude: position.coords.latitude, longitude: position.coords.longitude}, function(e, data){
                         if(e) $log.error(e);
                         $scope.player = data;
+                        store.set('player', $scope.player);
                         $socket.emit('join', {}, function(e, data){
                             if(e) $log.error(e);
-                            $scope.game.is_registered = true;
-                            $scope.$apply();
                         });
                     });
                 }

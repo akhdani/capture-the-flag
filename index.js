@@ -51,6 +51,26 @@ io.on('connection', function (socket) {
         }
     });
 
+    // player reconnect, get by playerid
+    socket.on('reconnect', function(data, fn){
+        var player = null;
+        for(var i in players) if(players.hasOwnProperty(i)){
+            if(players[i].data.id == data.id){
+                players[i].move(data);
+
+                players[socket.id] = {
+                    socket: socket,
+                    data: players[i].data
+                };
+                break;
+            }
+        }
+        if(!players[socket.id]){
+            fn(null, players[socket.id].data);
+            broadcast();
+        }
+    });
+
     // player disconnect
     socket.on('disconnect', function(){
         try{
