@@ -20,7 +20,8 @@
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "cordova-plugin-geolocation",
-    "com.ionic.keyboard"
+    "com.ionic.keyboard",
+    "de.appplant.cordova.plugin.background-mode"
   ],
   "cordovaPlatforms": [
     "android"

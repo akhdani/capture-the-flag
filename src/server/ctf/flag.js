@@ -36,28 +36,31 @@ module.exports = function(config){
     // longest grabbed time
     self.longest_grabbed = 0;
 
+    // called when admin reset the flag position
+    self.reset = function(){
+        self.latitude = self.game.config.flag.latitude;
+        self.longitude = self.game.config.flag.longitude;
+        self.locations = [];
+        self.holders = [];
+        self.holder = null;
+        self.last_grabbed = null;
+        self.longest_grabber = null;
+        self.longest_grabbed = 0;
+    };
+
     // called when player try to grab a flag
     self.grab = function(player){
         // check if flag is grabbable
         self.isgrabbable(player);
 
+        // previous holder release
+        self.release(self.holder);
+
         // set current holder
         self.holder = player;
         self.last_grabbed = moment().format('X');
 
-        if(self.holders.length > 0){
-            // set previous holder history
-            self.holders[self.holders.length-1].stop_grab = self.last_grabbed;
-            self.holders[self.holders.length-1].duration = Math.abs(moment(self.holders[self.holders.length-1].stop_grab, 'X').diff(moment(self.holders[self.holders.length-1].start_grab, 'X'), 'seconds'));
-
-            // check if longest grabber
-            if(self.holders[self.holders.length-1].duration > self.longest_grabbed){
-                self.longest_grabber = self.holders[self.holders.length-1].player;
-                self.longest_grabbed = self.holders[self.holders.length-1].duration;
-            }
-        }
-
-        // set to history
+        // add to history
         self.holders.push({
             player: player.id,
             start_grab: self.last_grabbed,
@@ -67,6 +70,24 @@ module.exports = function(config){
 
         // move flag
         self.move(player);
+    };
+
+    // called when player release a flag
+    self.release = function(player){
+        // set previous holder
+        if(self.holders.length > 0){
+            if(self.holder != player.id) throw new Error('Player is not the flag holder');
+
+            // set previous holder history
+            self.holders[self.holders.length-1].stop_grab = moment().format('X');
+            self.holders[self.holders.length-1].duration = Math.abs(moment(self.holders[self.holders.length-1].stop_grab, 'X').diff(moment(self.holders[self.holders.length-1].start_grab, 'X'), 'seconds'));
+
+            // check if longest grabber
+            if(self.holders[self.holders.length-1].duration > self.longest_grabbed){
+                self.longest_grabber = self.holders[self.holders.length-1].player;
+                self.longest_grabbed = self.holders[self.holders.length-1].duration;
+            }
+        }
     };
 
     // isgrabbable

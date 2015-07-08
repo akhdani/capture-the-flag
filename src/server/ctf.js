@@ -12,7 +12,7 @@ module.exports =  function(config){
 
         // flag
         flag: {
-            latitude: config.latitude || -6.89540614,
+            latitude: config.latitude || -6.89570614,
             longitude: config.longitude || 107.63962269,
             distance: config.distance || 50,
             time: config.time || 120,
@@ -78,6 +78,15 @@ module.exports =  function(config){
 
         // mark as not started
         self.is_started = false;
+    };
+
+    // called when admin reset the game (from browser)
+    self.reset = function(){
+        if(!self.is_started) throw new Error('Game is not started');
+
+        // when reset the flag
+        self.flag.reset();
+        self.players = [];
     };
 
     // send all data needed by player in client

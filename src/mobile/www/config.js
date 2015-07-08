@@ -1,8 +1,9 @@
-alt.application = 'capture-the-flag';
+alt.application = 'ctf-mobile';
 alt.version = '1.0.0';
 alt.environment = 'development';
 alt.urlArgs = alt.environment == 'production' ? '_v=' + alt.version : '_t=' + (+new Date());
 alt.serverUrl = 'http://ars-ctf.herokuapp.com/';
+//alt.serverUrl = 'http://192.168.0.32:5000/';
 alt.registry = {
     GMAP_KEY: 'AIzaSyAJ8NzwC5JF-BczLVVBh7rMzvdf55RnpCA'
 };

@@ -83,11 +83,21 @@ module.exports = function(name, latitude, longitude){
         self.game.flag.grab(self);
     };
 
+    // release the flag
+    self.release = function(data){
+        if(self.game == null) throw new Error('Player ' + self.name + ' is not in game');
+        if(!self.game.is_started)  throw new Error('Game flag is not started');
+        if(self.game.flag == null)  throw new Error('Game flag is not set');
+
+        self.game.flag.release(self);
+    };
+
     // return player as normal js object
     self.data = function(){
         var isgrabbable = false,
             distance = Math.ceil(helper.get_distance(self.latitude, self.longitude, self.game.flag.latitude, self.game.flag.longitude)),
             direction = helper.get_direction(self.latitude, self.longitude, self.game.flag.latitude, self.game.flag.longitude);
+
         try{
             self.game.flag.isgrabbable(self);
             isgrabbable = true;
@@ -102,8 +112,8 @@ module.exports = function(name, latitude, longitude){
             longitude: self.longitude,
             isgrabbable: isgrabbable,
             time: self.time,
-            distance: distance,
-            direction: direction
-        }
+            distance: distance || 0,
+            direction: direction || 0
+        };
     };
 };
