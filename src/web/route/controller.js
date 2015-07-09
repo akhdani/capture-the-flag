@@ -48,6 +48,7 @@ define([
             latitude: -6.89521975,
             longitude: 107.63844252,
             marker: [],
+            circle: null,
             redraw: function(){
                 // reset map marker
                 for(var i=0; i<$scope.map.marker.length; i++){
@@ -105,6 +106,22 @@ define([
                             $scope.map.info.open($scope.map.object, marker);
                         });
                         $scope.map.bounds.extend(position);
+
+                        // add circle radius to flag
+                        if(markers[i].type == 'flag'){
+                            if($scope.map.circle) $scope.map.circle.setMap(null);
+
+                            $scope.map.circle = new google.maps.Circle({
+                                center: position,
+                                radius: $scope.game.flag.distance,
+                                strokeColor: "#FF0000",
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: "#FF0000",
+                                fillOpacity: 0.35,
+                                map: $scope.map.object
+                            });
+                        }
                     }
                 }
 

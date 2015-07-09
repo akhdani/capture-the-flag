@@ -120,6 +120,7 @@ module.exports = function(config){
             id: self.id,
             latitude: self.latitude,
             longitude: self.longitude,
+            distance: self.distance,
             last_grabbed: self.last_grabbed,
             holder: self.holder ? self.holder.id : 0,
             holders: self.holders,
