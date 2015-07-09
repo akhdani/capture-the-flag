@@ -203,23 +203,22 @@ define([
 
             // Called when background mode has been activated
             cordova.plugins.backgroundMode.onactivate = function(){
-                //$log.debug('backgroundMode.onactivate ' + cordova.plugins.backgroundMode.isEnabled() + ' ' + cordova.plugins.backgroundMode.isActive());
-                cordova.plugins.backgroundMode.disable();
+                $log.debug('backgroundMode.onactivate ' + cordova.plugins.backgroundMode.isEnabled() + ' ' + cordova.plugins.backgroundMode.isActive());
 
                 GPSLocation.clearWatch($scope.watch);
                 $scope.watch = $scope.watch_position();
 
                 setInterval(function(){
-                    //$log.debug('backgroundMode.onactivate interval ' + cordova.plugins.backgroundMode.isEnabled() + ' ' + cordova.plugins.backgroundMode.isActive());
+                    $log.debug('backgroundMode.onactivate interval ' + cordova.plugins.backgroundMode.isEnabled() + ' ' + cordova.plugins.backgroundMode.isActive());
                 }, 200);
             };
 
             cordova.plugins.backgroundMode.ondeactivate = function(){
-                //$log.debug('backgroundMode.ondeactivate ' + cordova.plugins.backgroundMode.isEnabled() + ' ' + cordova.plugins.backgroundMode.isActive());
+                $log.debug('backgroundMode.ondeactivate ' + cordova.plugins.backgroundMode.isEnabled() + ' ' + cordova.plugins.backgroundMode.isActive());
             };
 
             cordova.plugins.backgroundMode.onfailure = function(error){
-                //$log.debug('backgroundMode.onfailure ' + error);
+                $log.debug('backgroundMode.onfailure ' + error);
             };
         }
     }];

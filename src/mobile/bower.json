@@ -2,8 +2,5 @@
   "name": "HelloIonic",
   "private": "true",
   "devDependencies": {
-  },
-  "resolutions": {
-    "angular": "~1.4.1"
   }
 }
